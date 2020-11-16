@@ -1,5 +1,6 @@
 package com.ailibaba.crm.settings.service;
 
+import com.ailibaba.crm.base.exception.CrmException;
 import com.ailibaba.crm.settings.bean.User;
 
 import java.util.List;
@@ -17,4 +18,6 @@ import java.util.List;
 public interface UserService {
 
     List<User> queryUsers();
+
+    User login(User user) throws CrmException;
 }

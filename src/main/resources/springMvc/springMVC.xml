@@ -9,7 +9,7 @@
 	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 	<!-- 第1步：扫描Controller -->
 	<context:component-scan
-            base-package="com.ailibaba.crm.settings.controller" />
+            base-package="com.ailibaba.crm.settings.controller,com.ailibaba.crm.base.controller" />
 
 	<!-- 第2步：打开注解驱动,配置处理器映射器和处理器适配器 -->
 	<mvc:annotation-driven>

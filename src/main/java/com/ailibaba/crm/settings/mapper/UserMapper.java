@@ -14,5 +14,4 @@ import tk.mybatis.mapper.common.Mapper;
  * Copyright: Copyright (c) 2020
  */
 public interface UserMapper extends Mapper<User> {
-
 }
