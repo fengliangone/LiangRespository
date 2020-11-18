@@ -12,5 +12,8 @@ package com.ailibaba.crm.base.constants;
  */
 public class CrmConstants {
 
-    public static final String LOGIN_SUCESS="user";
+    //用户session对象名
+    public static final String LOGIN_SUCESS="User";
+    //分页每页记录数
+    public static final int PAGE_SIZE=2;
 }

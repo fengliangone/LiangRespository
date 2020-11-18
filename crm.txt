@@ -1,0 +1,21 @@
+001:用户模块
+002：市场活动
+
+命名规范：
+    后台和前台保存：save。。。
+    更新:update
+    删除:delete
+    查询：query
+
+    按钮：save..Btn
+
+
+ajax模板
+    $.ajax({
+        url: '',
+        data:'',
+        type:'',
+        dataType:'',
+        sucess:function(data){
+        }
+    });

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ailibaba.crm.workbench.mappers.ActivityMapper">
+
+
+    <select id="listActivity" parameterType="activityQueryVo" resultType="map">
+--       起别名，因为字段名重复
+        select a.*,u.name uname from tbl_activity a left join tbl_user u on a.owner=u.id
+        <where>
+            <if test="name!=null and name!=''">
+              a.name like concat('%',#{name},'%')
+            </if>
+            <if test="owner!=null and owner!=''">
+               and u.name like concat('%',#{owner},'%')
+            </if>
+            <if test="startTime!=null and startTime!=''">
+               and a.startDate>#{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and #{endTime}> a.endDate
+            </if>
+        </where>
+    </select>
+
+
+    <select id="queryActivityById" resultType="map">
+         select a.*,u.name uname from tbl_activity a left join tbl_user u on a.owner=u.id
+          where a.id=#{id}
+    </select>
+</mapper>

@@ -15,7 +15,10 @@ public enum CrmExceptionEnum {
     LOGIN_ACCOUNT_ERROR("001","用户名或密码异常"),
     LOGIN_ACCOUNT_EXPIRE("001","账户失效"),
     LOGIN_ACCOUNT_FORBID("001","账户已被禁用"),
-    LOGIN_ACCOUNT_IP("001","不允许的ip地址");
+    LOGIN_ACCOUNT_IP("001","不允许的ip地址"),
+
+    ACTIVITY__SAVE("002","添加市场活动失败"),
+    ACTIVITY__UPDATE("002","更新市场活动失败");
     //    根据状态码判断异常
     private String code;//业务状态码  001:用户登录  002：交易模块
 
