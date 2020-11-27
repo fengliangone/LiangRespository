@@ -28,4 +28,5 @@
          select a.*,u.name uname from tbl_activity a left join tbl_user u on a.owner=u.id
           where a.id=#{id}
     </select>
+
 </mapper>

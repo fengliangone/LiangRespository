@@ -8,12 +8,14 @@ import com.ailibaba.crm.settings.bean.User;
 import com.ailibaba.crm.settings.service.UserService;
 import com.ailibaba.crm.workbench.bean.Activity;
 import com.ailibaba.crm.workbench.bean.ActivityQueryVo;
+import com.ailibaba.crm.workbench.bean.ActivityRemark;
 import com.ailibaba.crm.workbench.service.ActivityService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,6 +42,7 @@ public class ActivityController {
 
     @Autowired
     private UserService userService;
+
 
     /**
      * 模拟查询市场数据
@@ -93,10 +96,10 @@ public class ActivityController {
 
         try{
             activityService.saveActivity(activity);
-            resultVo.setOk(true);
+            resultVo.setSucess(true);
             resultVo.setMess("添加成功");
         } catch (CrmException e){
-            resultVo.setOk(false);
+            resultVo.setSucess(false);
             resultVo.setMess(e.getMessage());
         }
         return resultVo;
@@ -128,18 +131,128 @@ public class ActivityController {
 
         try{
             activityService.updateActivity(activity);
-            resultVo.setOk(true);
+            resultVo.setSucess(true);
             resultVo.setMess("更新成功");
         } catch (CrmException e){
-            resultVo.setOk(false);
-            resultVo.setMess("更新失败");
+            resultVo.setSucess(false);
             resultVo.setMess(e.getMessage());
         }
         return resultVo;
     }
 
+    /**
+     * 删除市场活动
+     * @param id
+     * @return
+     */
+    @RequestMapping("/workbench/activity/deleteActivity")
+    @ResponseBody
+    public ResultVo deleteActivity(String id){
+        ResultVo resultVo=new ResultVo();
 
+        try{
+            activityService.deleteActivity(id);
+            resultVo.setSucess(true);
+            resultVo.setMess("删除成功");
+        } catch (CrmException e){
+            resultVo.setSucess(false);
+            resultVo.setMess(e.getMessage());
+        }
+        return resultVo;
+    }
 
+    /**
+     * 市场活动和备注查询
+     * @param id
+     * @param model
+     * @return
+     */
+    @RequestMapping("/workbench/activity/queryActivityDetailById")
+    public String queryActivityDetailById(String id, Model model){
+        Activity activity=activityService.queryActivityDetailById(id);
 
+        model.addAttribute("activity",activity);
+
+        return "forward:/toView/activity/detail";
+    }
+
+    /**
+     * 异步修改备注内容
+     * @param activityRemark
+     * @return
+     */
+    @RequestMapping("/workbench/activity/updateActivityRemark")
+    @ResponseBody
+    public ResultVo updateActivityRemark(ActivityRemark activityRemark){
+
+        ResultVo resultVo = new ResultVo();
+        try {
+            activityService.updateActivityRemark(activityRemark);
+            resultVo.setSucess(true);
+            resultVo.setMess("修改备注成功");
+        }catch (CrmException e){
+            resultVo.setSucess(false);
+            //将异常信息添加到resultVo中
+            resultVo.setMess(e.getMessage());
+        }
+        return resultVo;
+    }
+
+    /**
+     * 删除备注
+     * @param id
+     * @return
+     */
+    @RequestMapping("/workbench/activity/deleteActivityRemark")
+    @ResponseBody
+    public ResultVo deleteActivityRemark(String id){
+
+        ResultVo resultVo = new ResultVo();
+        try {
+            activityService.deleteActivityRemark(id);
+            resultVo.setSucess(true);
+            resultVo.setMess("删除备注成功");
+        }catch (CrmException e){
+            resultVo.setSucess(false);
+            //将异常信息添加到resultVo中
+            resultVo.setMess(e.getMessage());
+        }
+        return resultVo;
+    }
+
+    /**
+     * 添加市场备注
+     * @param activityRemark
+     * @return
+     */
+    @RequestMapping("/workbench/activity/saveActivityRemark")
+    @ResponseBody
+    public ResultVo saveActivityRemark(ActivityRemark activityRemark,HttpSession session){
+        ResultVo resultVo = new ResultVo();
+        User user= (User) session.getAttribute("User");
+        activityRemark.setCreateBy(user.getName());
+        try {
+            activityService.insertActivityRemark(activityRemark);
+            resultVo.setSucess(true);
+            resultVo.setMess("添加备注成功");
+        }catch (CrmException e){
+            resultVo.setSucess(false);
+            //将异常信息添加到resultVo中
+            resultVo.setMess(e.getMessage());
+        }
+        return resultVo;
+    }
+
+    //在市场详细详细页面，根据主键删除市场活动
+    @RequestMapping("/workbench/activity/deleteActivityByDetail")
+    public String deleteActivityByDetail(String id){
+        try{
+            //删除成功
+            activityService.deleteActivity(id);
+        }catch (CrmException e){
+            e.printStackTrace();
+        }
+        return "redirect:/toView/activity/index";
+    }
 
 }

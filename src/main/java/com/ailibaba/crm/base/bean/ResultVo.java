@@ -13,24 +13,24 @@ package com.ailibaba.crm.base.bean;
 public class ResultVo {
 
 //    是否成功
-    private boolean isOk;
+    private boolean sucess;
 //    消息
     private String mess;
 
     @Override
     public String toString() {
         return "ResultVo{" +
-                "isOk=" + isOk +
+                "sucess=" + sucess +
                 ", mess='" + mess + '\'' +
                 '}';
     }
 
-    public boolean isOk() {
-        return isOk;
+    public boolean isSucess() {
+        return sucess;
     }
 
-    public void setOk(boolean ok) {
-        isOk = ok;
+    public void setSucess(boolean sucess) {
+        this.sucess = sucess;
     }
 
     public String getMess() {

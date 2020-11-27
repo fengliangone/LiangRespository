@@ -3,6 +3,7 @@ package com.ailibaba.crm.workbench.service;
 import com.ailibaba.crm.base.exception.CrmException;
 import com.ailibaba.crm.workbench.bean.Activity;
 import com.ailibaba.crm.workbench.bean.ActivityQueryVo;
+import com.ailibaba.crm.workbench.bean.ActivityRemark;
 
 import java.util.List;
 
@@ -27,4 +28,14 @@ public interface ActivityService {
     List<Map<String,String>> queryActivityById(String id);
 
     void updateActivity(Activity activity) throws CrmException;
+
+    void deleteActivity(String id) throws CrmException;
+
+    Activity queryActivityDetailById(String id);
+
+    void updateActivityRemark(ActivityRemark activityRemark) throws CrmException;
+
+    void deleteActivityRemark(String id) throws CrmException;
+
+    void insertActivityRemark(ActivityRemark activityRemark) throws CrmException;
 }

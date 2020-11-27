@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -42,8 +42,7 @@
 				</div>
 				<div class="modal-body">
 				
-					<form class="form-horizontal" action="/crm/workbench/activity/saveActivity" method="post" role="form">
-
+					<form class="form-horizontal" id="createActivity-form" method="post" role="form">
 						<div class="form-group">
 							<label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -105,7 +104,7 @@
 				<div class="modal-body">
 				
 					<form class="form-horizontal" role="form">
-					
+                        <input type="hidden" id="activityId" />
 						<div class="form-group">
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -206,8 +205,8 @@
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" onclick="queryUsers()" class="btn btn-primary" data-toggle="modal" data-target="#createActivityModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" onclick="queryActivityById()" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" id="updateActivity" class="btn btn-default" data-toggle="modal" ><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button"  id="deleteActivity" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 			</div>
@@ -239,74 +238,89 @@
 	<script>
 
 
-		var edit_id;
-		function queryActivityById(){
+        function refresh(data){
+            alert(data.mess);
+            pageList(1,2);
+        }
 
-			if($('.son:checked').length==0 ||$('.son:checked').length >1 ){
-				alert("只能选择一条记录");
+        // 删除市场活动
+        $('#deleteActivity').click(function () {
+            if($('.son:checked').length==0 ||$('.son:checked').length >1 ){
+                alert("只能选择一条记录");
+                return;
+            }{
+                $.ajax({
+                    url: '/crm/workbench/activity/deleteActivity',
+                    data:{"id":$('.son:checked').val()},
+                    type: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        refresh(data);
+                    }
+                });
+            }
 
-			}else {
-				//获取勾中的id
-				var id='';
-				$('.son').each(function () {
-					if($(this).prop('checked')){
-						id=$(this).val();
-					}
-				});
-				var uname;
-
-				$('#edit-marketActivityOwner').html("");
-				// 打开修改市场活动模块框,获取选择的市场活动
-				$.ajax({
-					url: '/crm/workbench/activity/queryActivityById',
-					data:{'id':id},
-					type:'post',
-					dataType:'json',
-					success:function(data) {
-						edit_id=data[0].id;
-						uname=data[0].uname;
-						$('#edit-marketActivityName').val(data[0].name);
-						$('#edit-startTime').val(data[0].startDate);
-						$('#edit-endTime').val(data[0].endDate);
-						$('#edit-cost').val(data[0].cost);
-						$('#edit-describe').val(data[0].description);
-					}
-				});
+        });
 
 
-				// 打开修改市场活动模块框,获取所有者
-				$.ajax({
-					url: '/crm/workbench/activity/queryUsers',
-					//data:'',
-					type:'post',
-					dataType:'json',
-					success:function(data){
-						console.log(uname);
-						for (var i=0;i<data.length;i++){
-							if ( uname==data[i].name)
-							{
-								$('#edit-marketActivityOwner')
-										.append("<option selected="+true+" value="+data[i].id+">"+data[i].name+"</option>");
-							}else {
-								$('#edit-marketActivityOwner')
-										.append("<option value=" + data[i].id + ">" + data[i].name + "</option>");
-							}
-						}
+		// 点击修改按钮事件
+		$('#updateActivity').click(function () {
+            if($('.son:checked').length==0 ||$('.son:checked').length >1 ){
+                alert("只能选择一条记录");
+                return;
+            }else {
+                $('#editActivityModal').modal('show');
+                // 异步查询所有所有者信息
+                $.ajax({
+                    url: '/crm/workbench/activity/queryUsers',
+                    //data:'',
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
 
-					}
-				});
-			}
+                        for (var i = 0; i < data.length; i++) {
+                            $('#edit-marketActivityOwner')
+                                .append("<option value=" + data[i].id + ">" + data[i].name + "</option>");
 
+                        }
 
-		}
+                    }
+                });
 
+                $('#edit-marketActivityOwner').html("");
+                // 打开修改市场活动模块框,获取选择的市场活动
+                $.ajax({
+                    url: '/crm/workbench/activity/queryActivityById',
+                    data: {'id': $('.son:checked').val()},
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        //隐藏域
+                        $('#activityId').val(data.id);
+                        var owner = data[0].owner;
+                        $('#edit-marketActivityOwner option').each(function () {
+                            if ($(this).val() == owner) {
+                                //选中
+                                console.log("11");
+                                $(this).prop('selected', true);
+                            }
+                        })
+                        $('#edit-marketActivityName').val(data[0].name);
+                        $('#edit-startTime').val(data[0].startDate);
+                        $('#edit-endTime').val(data[0].endDate);
+                        $('#edit-cost').val(data[0].cost);
+                        $('#edit-describe').val(data[0].description);
+                    }
+                });
+            }
+        });
 		// 提交修改表单
 		$('#updateActivityBtn').click(function () {
 			//异步提交创建市场活动表单
 			$.ajax({
 				url : '/crm/workbench/activity/updateActivity',
 				data : {
-					'id' :edit_id,
+					'id' : $('#activityId').val(),
 					'owner' : $('#edit-marketActivityOwner').val(),
 					'name'  : $('#edit-marketActivityName').val(),
 					'startDate' : $('#edit-startTime').val(),
@@ -317,19 +331,13 @@
 				type : 'post',
 				dataType : 'json',
 				success: function(data){
-					if (data.isOk) {
 						alert(data.mess);
-					}else {
-						alert(data.mess);
-					}
-
 					/*
                     modal函数:弹窗函数 show:显示 hide:隐藏
                      */
 					//隐藏模态窗口
 					$('#editActivityModal').modal('hide');
-
-					//调用pageList刷新页面
+                    //调用pageList刷新页面
 					pageList(1,2);
 				}
 			});
@@ -357,19 +365,20 @@
                     modal函数:弹窗函数 show:显示 hide:隐藏
                      */
 					//隐藏模态窗口
+
 					$('#createActivityModal').modal('hide');
 
 					//调用pageList刷新页面
 					pageList(1,2);
+
 				}
 			});
-
-
-
 		});
-
+		// 打开新建市场活动模块框,获取所有者
 		function queryUsers(){
-			// 打开新建市场活动模块框,获取所有者
+			// 重置模块窗
+			$('#createActivity-form')[0].reset();
+
 			$.ajax({
 				url: '/crm/workbench/activity/queryUsers',
 				//data:'',
@@ -387,7 +396,6 @@
 		//查询事件
 		function queryActivity(){
 			pageList(1,2);
-
 		}
 		// 第一次查询第一页数据
 		pageList(1);
@@ -413,7 +421,8 @@
 					for (var i=0;i<dataList.length;i++){
 						$('#activityBody').append("<tr class=\"active\">\n" +
 								"<td><input type=\"checkbox\" class=\"son\" value="+dataList[i].id+"></td>\n" +
-								"<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='detail.html';\">"+dataList[i].name+"</a></td>\n" +
+								"<td><a style=\"text-decoration: none; cursor: pointer;\" " +
+                                "href=/crm/workbench/activity/queryActivityDetailById?id="+dataList[i].id+">"+dataList[i].name+"</a></td>\n" +
 								"<td>"+dataList[i].uname+"</td>\n" +
 								"<td>"+dataList[i].startDate+"</td>\n" +
 								"<td>"+dataList[i].endDate+"</td>\n" +

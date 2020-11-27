@@ -22,4 +22,6 @@ public interface ActivityMapper extends Mapper<Activity> {
     List<Map<String, String>> listActivity(ActivityQueryVo activityQueryVo);
 
     List<Map<String, String>> queryActivityById(String id);
+
+    Activity queryActivityDetailById(String id);
 }

@@ -49,7 +49,7 @@ public class UserController {
      * @param session
      * @return 转发地址
      */
-    @PostMapping("/settings/user/login")
+    @RequestMapping("/settings/user/login")
     public String login(User user, Model model,
                         HttpServletRequest request,
                         HttpSession session){

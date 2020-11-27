@@ -32,7 +32,8 @@
         <property name="dataSource" ref="dataSource" />
 
         <!--Mybatis:扫描包,给定实体类别名,默认是类名首字母小写-->
-        <property name="typeAliasesPackage" value="com.ailibaba.crm.settings.bean,com.ailibaba.crm.workbench.bean" />
+        <property name="typeAliasesPackage" value="com.ailibaba.crm.settings.bean,
+                                com.ailibaba.crm.workbench.bean" />
 
         <!--批量扫描映射文件-->
         <property name="mapperLocations" value="classpath:mappers/*.xml" />
