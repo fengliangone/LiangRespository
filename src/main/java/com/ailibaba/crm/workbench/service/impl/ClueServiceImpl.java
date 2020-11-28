@@ -126,7 +126,6 @@ public class ClueServiceImpl implements ClueService {
         if (count==0){
             throw new CrmException(CrmExceptionEnum.CLUE_REMARK_UPDATE);
         }
-
     }
 
     @Override

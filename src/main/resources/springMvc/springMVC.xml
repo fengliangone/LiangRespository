@@ -54,6 +54,7 @@
 		<mvc:mapping path="/**"/>
 		<mvc:exclude-mapping path="/jquery/**" />
 		<mvc:exclude-mapping path="/image/**" />
+		<mvc:exclude-mapping path="/ECharts/**" />
 		<bean class="com.ailibaba.crm.settings.interceptor.LoginInterceptor" />
 	</mvc:interceptor>
 

@@ -2,6 +2,7 @@ package com.ailibaba.crm.workbench.service;
 
 import com.ailibaba.crm.base.exception.CrmException;
 import com.ailibaba.crm.workbench.bean.Transaction;
+import com.ailibaba.crm.workbench.bean.TransactionEchartsResultVo;
 
 import java.util.List;
 import java.util.Map;
@@ -24,4 +25,6 @@ public interface TransactionService {
     Transaction queryTransactionById(String id, Map<String, String> stage2PossibilityMap);
 
     List<Map<String,? extends Object>> stageList(String name, Integer index, String tranId, Map<String, String> map) throws CrmException;
+
+    TransactionEchartsResultVo queryTransactionEcharts();
 }

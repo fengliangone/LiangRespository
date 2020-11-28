@@ -301,4 +301,22 @@ public class TransactionServiceImpl implements TransactionService {
         stages.add(transactionHistoryMap);
         return stages;
     }
+
+    @Override
+    public TransactionEchartsResultVo queryTransactionEcharts() {
+        List<Map<String,String>> mapList=transactionMapper.queryTransactionEcharts();
+        Map<String,List<Map<String,String>>> map = new HashMap<>();
+        //图表中的series的data
+        map.put("transactions",mapList);
+        //图表中legend的data
+        List<String> names = new ArrayList<>();
+        for(Map<String,String> m : mapList){
+            String name = m.get("name");
+            names.add(name);
+        }
+        TransactionEchartsResultVo transactionEchartsResultVo=new TransactionEchartsResultVo();
+        transactionEchartsResultVo.setDataList(names);
+        transactionEchartsResultVo.setDataMap(map);
+        return transactionEchartsResultVo;
+    }
 }

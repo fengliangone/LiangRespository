@@ -263,7 +263,7 @@
 							<td>创建人</td>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="transactionHistoryBody">
                     <c:forEach items="${transaction.transactionHistories}" var="transactionHistory">
                         <tr>
                             <td>${transactionHistory.stage}</td>
@@ -341,6 +341,104 @@
                 });
             }
         });
+
+        //将每个span的单击事件委托给父元素
+        //参数1:事件类型  参数2:委托对象  参数3:回调函数(触发事件执行的函数)
+        /*
+            点击阶段图标，向后台发送异步请求，给后台发送每个阶段的索引下标，查询出对应的阶段信息
+         */
+        $('#tranStageDiv').on('click','span',function () {
+            //$(this):每个span
+            var $this = $(this);
+            $.ajax({
+                url : '/crm/workbench/transaction/stageList',
+                data : {
+                    'index' : $(this).attr('index'),
+                    'tranId' : '${transaction.id}'
+                },
+                type : 'get',
+                dataType : 'json',
+                success : function(data){
+                    $('#tranStageDiv').html("");
+                    var content = "阶段&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+
+                    var possibility;
+                    for(var i = 0 ; i < data.length ;i++){
+                        var stageMap = data[i];
+                        //修改当前页面的交易阶段内容和交易的可能性
+                        if($this.attr('index') == i){
+                            var text = stageMap.text;
+                            possibility = stageMap.possibility;
+                            $('#stage').html(text);
+                            $('#possibility').html(possibility);
+                        }
+
+                        if("绿圈" == stageMap.type){
+                            //绿圈
+                            content += "<span index="+stageMap.index+"  class=\"glyphicon glyphicon-ok-circle mystage\" data-toggle=\"popover\" data-placement=\"bottom\" data-content="+stageMap.text+" style=\"color: #90F790;\"></span>"
+                            content += "-----------";
+                        }else if("锚点" == stageMap.type){
+                            //锚点
+                            content += "<span index="+stageMap.index+" class=\"glyphicon glyphicon-map-marker mystage\" data-toggle=\"popover\" data-placement=\"bottom\" data-content="+stageMap.text+" style=\"color: #90F790;\"></span>"
+                            content += "-----------";
+                        }else if("黑圈" == stageMap.type){
+                            //黑圈
+                            content += "<span index="+stageMap.index+" class=\"glyphicon glyphicon-record mystage\" data-toggle=\"popover\" data-placement=\"bottom\" data-content="+stageMap.text+"></span>"
+                            content += "-----------";
+                        }else if("红叉" == stageMap.type){
+                            //红叉
+                            content += "<span index="+stageMap.index+" class=\"glyphicon glyphicon-remove mystage\" data-toggle=\"popover\" data-placement=\"bottom\" data-content="+stageMap.text+" style=\"color: red;\"></span>"
+                            content += "-----------";
+                        }else if("黑叉" == stageMap.type){
+                            //黑叉
+                            content += "<span index="+stageMap.index+" class=\"glyphicon glyphicon-remove mystage\" data-toggle=\"popover\" data-placement=\"bottom\" data-content="+stageMap.text+"></span>"
+                            content += "-----------";
+                        }
+                    }
+                    content += "-----------"+new Date().toLocaleDateString();
+                    $('#tranStageDiv').html(content);
+
+                    // 交易历史添加
+                    var transactionHistory = data[data.length -1]. transactionHistory;
+                    $('#transactionHistoryBody').append("<tr>\n" +
+                        "\t\t\t\t\t\t\t\t<td>"+transactionHistory.stage+"</td>\n" +
+                        "\t\t\t\t\t\t\t\t<td>"+transactionHistory.money+"</td>\n" +
+                        "\t\t\t\t\t\t\t\t<td>"+possibility+"</td>\n" +
+                        "\t\t\t\t\t\t\t\t<td>"+transactionHistory.expectedDate+"</td>\n" +
+                        "\t\t\t\t\t\t\t\t<td>"+transactionHistory.createTime+"</td>\n" +
+                        "\t\t\t\t\t\t\t\t<td>"+transactionHistory.createBy+"</td>\n" +
+                        "\t\t\t\t\t\t\t</tr>");
+
+
+
+
+                    //阶段提示框
+                    $(".mystage").popover({
+                        trigger:'manual',
+                        placement : 'bottom',
+                        html: 'true',
+                        animation: false
+                    }).on("mouseenter", function () {
+                        var _this = this;
+                        $(this).popover("show");
+                        $(this).siblings(".popover").on("mouseleave", function () {
+                            $(_this).popover('hide');
+                        });
+                    }).on("mouseleave", function () {
+                        var _this = this;
+                        setTimeout(function () {
+                            if (!$(".popover:hover").length) {
+                                $(_this).popover("hide")
+                            }
+                        }, 100);
+                    });
+                }
+            });
+
+        });
+
+
+
 
     </script>
 </body>

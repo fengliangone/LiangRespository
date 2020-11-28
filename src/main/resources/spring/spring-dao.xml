@@ -62,7 +62,8 @@
         扫描mapper接口:目的就是为了给mapper接口生成子类
     -->
     <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.ailibaba.crm.settings.mapper,com.ailibaba.crm.workbench.mappers"/>
+        <property name="basePackage" value="com.ailibaba.crm.settings.mapper,
+                    com.ailibaba.crm.workbench.mappers"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 
